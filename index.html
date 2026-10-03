@@ -489,8 +489,8 @@ function ulohaZpameti(box, u, p, stav, done) {
   box.innerHTML = `<div class="zadani">Vyděl zpaměti. Kolik dostane každý košík a kolik zbude?</div>
     <div class="radek-zpameti"><span>${u.a} : ${u.b} =</span><span class="bunka siroka"></span><span>zb.</span><span class="bunka"></span></div>`;
   const [pq, pr] = $$(".bunka", box);
-  rekni(`Kolikrát se ${u.b} vejde do ${u.a}? Napiš výsledek a potvrď ✓.`);
-  pole(pq, 2, q, {
+  rekni(`Kolikrát se ${u.b} vejde do ${u.a}?`);
+  pole(pq, String(q).length, q, {
     chyba: n => n * u.b > u.a ? `${n} · ${u.b} = ${n * u.b}, to je víc než ${u.a}. Zkus menší číslo.`
                               : `${n} · ${u.b} = ${n * u.b}, zbylo by ${u.a - n * u.b}. To je víc než ${u.b}, vejde se ještě jednou.`,
     odhal: () => q === 0 ? `${u.a} je menší než ${u.b}, vejde se tam nulakrát. Výsledek je 0.` : `Správně je ${q}, protože ${q} · ${u.b} = ${q * u.b}.`,
@@ -796,7 +796,7 @@ function hub() {
 
 function pracovniHTML(nazev, pocet, podil, nav) {
   return `<div class="obrazovka">
-    <header class="lista"><button class="tl-mensi" id="zpet">← Pekárna</button><div class="lista-nazev">${nazev}</div><div class="lista-pocet">${pocet}</div></header>
+    <header class="lista"><button class="tl-mensi" id="zpet">🏠 Domů</button><div class="lista-nazev">${nazev}</div><div class="lista-pocet">${pocet}</div></header>
     <div class="progres"><div style="width:${podil * 100}%"></div></div>
     <main class="pracovni">
       <div class="karta-ulohy" id="box"></div>
@@ -874,7 +874,7 @@ function lekceHotova(li) {
   app.innerHTML = `<div class="obrazovka odmena"><div class="uvod-karta">
     <div class="velka-ikona">${L.ikona}✔</div><h1>Lekce hotová!</h1><p>${L.nazev}: teď už víš, jak na to.</p>
     ${dalsi ? `<button class="tl-hlavni" id="dalsiL">Další lekce: ${dalsi.nazev} ➜</button>` : `<p>Prošel(a) jsi celou Učebnu. Hurá na objednávky!</p>`}
-    <button class="tl-druhe" id="domu" style="margin-top:14px">← Do pekárny</button></div></div>`;
+    <button class="tl-druhe" id="domu" style="margin-top:14px">🏠 Domů</button></div></div>`;
   zvukFanfara();
   if (dalsi) $("#dalsiL").onclick = () => spustLekci(li + 1, 0);
   $("#domu").onclick = hub;
@@ -886,7 +886,7 @@ function spustMisi(mi) {
   if (S.rozp && S.rozp.mise === m.id && S.rozp.index > 0 && S.rozp.index < m.ulohy.length) return zobrazUlohu(mi, S.rozp.index, S.rozp.spravne);
   TOKEN++; deaktivuj();
   app.innerHTML = `<div class="obrazovka">
-    <header class="lista"><button class="tl-mensi" id="zpet">← Pekárna</button><div class="lista-nazev">${m.ikona} ${m.nazev}</div></header>
+    <header class="lista"><button class="tl-mensi" id="zpet">🏠 Domů</button><div class="lista-nazev">${m.ikona} ${m.nazev}</div></header>
     <div class="uvod-karta"><div class="velka-ikona">${m.ikona}</div><h1>${m.nazev}</h1>
       <div class="kvasek" style="text-align:left"><div class="kvasek-tvar">👨‍🍳</div><div class="bublina"><div>${m.uvod}</div></div></div>
       <p class="male">Úloh: ${m.ulohy.length}. Za objednávku dostaneš až 3 rohlíky podle toho, kolik úloh zvládneš napoprvé.</p>
@@ -927,7 +927,7 @@ function dokonciMisi(mi, sprav) {
     <div class="rohliky-hodnoceni">${rohliky(hv)}</div>
     <p>Napoprvé správně: <b>${sprav} z ${n}</b>.${hv < 3 ? " Objednávku si můžeš kdykoli zopakovat a získat víc rohlíků." : ""}</p>
     ${vse ? '<button class="tl-hlavni" id="zaver">🏆 Závěr a diplom</button>' : ""}
-    <button class="${vse ? "tl-druhe" : "tl-hlavni"}" id="domu" style="margin-top:14px">← Zpět do pekárny</button>
+    <button class="${vse ? "tl-druhe" : "tl-hlavni"}" id="domu" style="margin-top:14px">🏠 Domů</button>
   </div>`;
   zvukFanfara(); konfety();
   $("#domu").onclick = hub;
@@ -952,7 +952,7 @@ function diplom() {
   const celkem = HRA.mise.reduce((s, m) => s + (S.mise[m.id] ? S.mise[m.id].hvezdy : 0), 0);
   const datum = new Date().toLocaleDateString("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
   app.innerHTML = `<div class="obrazovka">
-    <header class="lista"><button class="tl-mensi" id="zpet">← Pekárna</button><div class="lista-nazev">🏆 Závěr</div></header>
+    <header class="lista"><button class="tl-mensi" id="zpet">🏠 Domů</button><div class="lista-nazev">🏆 Závěr</div></header>
     <p class="pribeh">${HRA.zaver}</p>
     <div class="diplom">
       <div class="diplom-ikona">👨‍🍳🥖🏆</div>
