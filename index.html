@@ -44,7 +44,6 @@ h2{margin:22px 0 10px;font-size:1.3rem}
 
 /* Úvod */
 .uvod-karta{max-width:640px;margin:20px auto;background:var(--mouka);border:4px solid var(--kura);border-radius:24px;padding:24px;text-align:center;box-shadow:0 8px 0 #e6c99c}
-.uvod-pekar{font-size:4rem}
 .uvod-karta h1{margin:4px 0;font-size:1.8rem}
 .podtitul{font-weight:bold;color:var(--kura)}
 .pribeh{font-size:1.05rem;text-align:left;background:#fff;border-radius:14px;padding:14px;border:2px dashed var(--kura)}
@@ -52,28 +51,20 @@ h2{margin:22px 0 10px;font-size:1.3rem}
 .uvod-karta input{margin-top:8px;width:100%;max-width:360px;font-size:1.2rem;padding:12px;border:3px solid var(--kura);border-radius:12px;text-align:center;font-family:inherit}
 .autor{margin-top:16px;font-size:.85rem;opacity:.8}
 
-/* Scéna pekárny */
-.scena{position:relative;height:250px;border-radius:20px;overflow:hidden;background:linear-gradient(#bfe3f2,#fdf1d8);border:3px solid var(--kura);margin:10px 0}
-.slunce{position:absolute;top:16px;right:24px;width:46px;height:46px;border-radius:50%;background:var(--maslo);box-shadow:0 0 22px #f6c94599}
-.zeme{position:absolute;bottom:0;left:0;right:0;height:40px;background:#9cc77a;border-top:3px solid #7aa95a}
-.budova{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:240px;height:132px;background:#f3d9b1;border:3px solid var(--cokolada);border-bottom:none}
-.strecha{position:absolute;top:-64px;left:-22px;width:278px;height:62px;background:var(--kura);clip-path:polygon(50% 0,100% 100%,0 100%)}
-.stit{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:var(--cokolada);color:var(--maslo);font:bold .72rem Georgia,serif;padding:3px 8px;border-radius:6px;white-space:nowrap}
-.pec{position:absolute;left:14px;bottom:0;width:58px;height:62px;background:#6e4430;border-radius:29px 29px 0 0;display:flex;align-items:center;justify-content:center}
-.pec .ohen{font-size:1.7rem;opacity:0;transition:opacity .6s}
-.pec.hori .ohen{opacity:1}
-.pec.hori{box-shadow:inset 0 -10px 18px #f28c28}
-.vyloha{position:absolute;left:84px;top:36px;width:92px;height:66px;background:#dff1fb;border:3px solid var(--cokolada);border-radius:6px;display:flex;flex-direction:column;justify-content:space-around;align-items:center;font-size:1.05rem}
-.dvere{position:absolute;right:14px;bottom:0;width:40px;height:68px;background:var(--cokolada);border-radius:20px 20px 0 0}
-.kvetiny{position:absolute;bottom:32px;left:calc(50% - 150px);font-size:1.3rem}
-.lampa{position:absolute;bottom:128px;left:calc(50% + 126px);font-size:1.4rem}
-.dodavka{position:absolute;bottom:30px;right:6px;font-size:2.6rem;transform:scaleX(-1)}
-.pohar{position:absolute;bottom:38px;left:8px;font-size:2.4rem}
-.prapory{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:1.5rem;white-space:nowrap}
-.prvek{opacity:0;scale:.5;transition:opacity .5s, scale .5s}
-.prvek.ma{opacity:1;scale:1}
-.novy, .pec.novy .ohen{animation:objev 1.2s ease-out}
-@keyframes objev{0%{scale:0}65%{scale:1.35}100%{scale:1}}
+/* Scéna pekárny (SVG ilustrace) */
+.scena{border-radius:20px;overflow:hidden;border:4px solid var(--kura);margin:10px 0;background:#FFF1D6;box-shadow:0 6px 0 #e6c99c}
+.scena svg{display:block;width:100%;height:auto}
+.scena .prvek{opacity:0;transition:opacity .6s}
+.scena .prvek.ma{opacity:1}
+.scena .novy{animation:objev 1.4s ease-out;transform-box:fill-box;transform-origin:center}
+@keyframes objev{0%{transform:scale(0);opacity:0}60%{transform:scale(1.25);opacity:1}100%{transform:scale(1)}}
+.scena .mrak{animation:mrak 40s ease-in-out infinite alternate}
+.scena .mrak2{animation-duration:55s}
+@keyframes mrak{to{transform:translateX(60px)}}
+.scena .kour.ma circle{animation:kour 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.scena .kour.ma circle:nth-child(2){animation-delay:1.3s}.scena .kour.ma circle:nth-child(3){animation-delay:2.6s}
+@keyframes kour{0%,100%{transform:translateY(0) scale(1);opacity:.9}50%{transform:translateY(-6px) scale(1.12);opacity:.6}}
+.uvod-karta .scena{margin:0 0 10px}
 .vitej{font-size:1.05rem}
 
 /* Dlaždice */
@@ -791,7 +782,7 @@ function ulohaSlovni(box, u, p, stav, done) {
 function uvod() {
   TOKEN++; deaktivuj();
   app.innerHTML = `<div class="obrazovka"><div class="uvod-karta">
-    <div class="uvod-pekar">👨‍🍳🥖</div>
+    ${scena(null, true)}
     <h1>${HRA.nazev}</h1>
     <div class="podtitul">${HRA.podtitul} · ${HRA.rocnik}</div>
     <p class="pribeh">${HRA.uvod}</p>
@@ -807,24 +798,112 @@ function uvod() {
 }
 
 function maOdmenu(key) { return HRA.mise.some(m => m.odmena === key && S.mise[m.id] && S.mise[m.id].hotovo); }
-function scena(nova) {
-  const c = key => `prvek ${maOdmenu(key) ? "ma" : ""} ${nova === key ? "novy" : ""}`;
-  return `<div class="scena" role="img" aria-label="Pekárna U Dělicího válečku">
-    <div class="slunce"></div>
-    <div class="${c("slavnost")} prapory">🎉🎊🎉🎊🎉</div>
-    <div class="budova">
-      <div class="strecha"></div>
-      <div class="${c("stit")} stit">U Dělicího válečku</div>
-      <div class="pec ${maOdmenu("pec") ? "hori" : ""} ${nova === "pec" ? "novy" : ""}"><span class="ohen">🔥</span></div>
-      <div class="vyloha"><div class="${c("regal")}">🍞🥖🍞</div><div class="${c("pecivo")}">🥐🥨🥐</div></div>
-      <div class="dvere"></div>
-    </div>
-    <div class="${c("kvetiny")} kvetiny">🌷🌼🌷</div>
-    <div class="${c("kvetiny")} lampa">🏮</div>
-    <div class="${c("dodavka")} dodavka">🚚</div>
-    <div class="${c("slavnost")} pohar">🏆</div>
-    <div class="zeme"></div>
-  </div>`;
+function scena(nova, vse) {
+  const ma = key => vse || maOdmenu(key);
+  const c = key => `prvek ${ma(key) ? "ma" : ""} ${nova === key ? "novy" : ""}`;
+  const bochnik = (x, y) => `<g transform="translate(${x} ${y})"><ellipse rx="15" ry="9" fill="#C8843A" stroke="#7A4A2A" stroke-width="2"/><path d="M-8 -3 l4 6 M-1 -5 l4 6 M6 -4 l3 5" stroke="#F3D19C" stroke-width="2" stroke-linecap="round"/></g>`;
+  const rohlik = (x, y) => `<g transform="translate(${x} ${y})"><path d="M-15 4 Q0 -16 15 4 Q8 -2 0 -1 Q-8 -2 -15 4Z" fill="#E7A24B" stroke="#9A5A22" stroke-width="2" stroke-linejoin="round"/><path d="M-6 -4 l2 5 M0 -6 v6 M6 -4 l-2 5" stroke="#9A5A22" stroke-width="1.5"/></g>`;
+  const preclik = (x, y) => `<g transform="translate(${x} ${y})" fill="none" stroke="#B86B2B" stroke-width="4" stroke-linecap="round"><path d="M-8 7 C-17 -4 -6 -12 0 -3 C6 -12 17 -4 8 7 C3 11 -3 11 -8 7"/><path d="M-6 7 L6 -3 M6 7 L-6 -3"/></g>`;
+  const kvet = (x, y, f) => `<g transform="translate(${x} ${y})"><path d="M0 0 v12" stroke="#4E8A3E" stroke-width="2"/><circle r="5" fill="${f}"/><circle r="2" fill="#FFE07A"/></g>`;
+  return `<div class="scena"><svg viewBox="0 0 800 380" role="img" aria-label="Pekárna U Dělicího válečku">
+  <defs>
+    <linearGradient id="nebe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9DDF3"/><stop offset=".75" stop-color="#FFF1D6"/></linearGradient>
+    <pattern id="tasky" width="24" height="16" patternUnits="userSpaceOnUse"><rect width="24" height="16" fill="#D9643A"/><path d="M0 16 a12 12 0 0 1 24 0" fill="#C2512B"/><path d="M0 16 a12 12 0 0 1 24 0" fill="none" stroke="#A8441F" stroke-width="1.5"/></pattern>
+    <pattern id="cihly" width="28" height="14" patternUnits="userSpaceOnUse"><rect width="28" height="14" fill="#B5654A"/><path d="M0 0.5H28M0 7.5H28M14 0V7M0 7V14M28 7V14" stroke="#8E4A35" stroke-width="1.5"/></pattern>
+    <pattern id="dlazba" width="34" height="18" patternUnits="userSpaceOnUse"><rect width="34" height="18" fill="#E9D6AE"/><rect x="2" y="2" width="30" height="14" rx="6" fill="#F2E3C2"/></pattern>
+    <radialGradient id="zar"><stop offset="0" stop-color="#FFE38A"/><stop offset=".5" stop-color="#F59A2E"/><stop offset="1" stop-color="#C2410C"/></radialGradient>
+    <radialGradient id="svetlo"><stop offset="0" stop-color="#FFE9A0" stop-opacity=".9"/><stop offset="1" stop-color="#FFE9A0" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="800" height="380" fill="url(#nebe)"/>
+  <!-- slunce a mraky -->
+  <g class="paprsky" transform="translate(705 70)"><circle r="56" fill="#FFE27A" opacity=".35"/><circle r="36" fill="#FFD44D" stroke="#F2B630" stroke-width="3"/><circle cx="-11" cy="-4" r="3" fill="#8A5A2B"/><circle cx="11" cy="-4" r="3" fill="#8A5A2B"/><path d="M-10 9 Q0 17 10 9" stroke="#8A5A2B" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="-20" cy="6" r="5" fill="#F7A86B" opacity=".6"/><circle cx="20" cy="6" r="5" fill="#F7A86B" opacity=".6"/></g>
+  <g class="mrak" fill="#fff"><circle cx="120" cy="70" r="22"/><circle cx="146" cy="60" r="28"/><circle cx="176" cy="72" r="20"/><rect x="100" y="70" width="96" height="22" rx="11"/></g>
+  <g class="mrak mrak2" fill="#fff"><circle cx="470" cy="40" r="16"/><circle cx="490" cy="32" r="21"/><circle cx="514" cy="42" r="15"/><rect x="455" y="40" width="74" height="17" rx="8"/></g>
+  <path d="M590 95 q6 -6 12 0 q6 -6 12 0 M630 120 q5 -5 10 0 q5 -5 10 0" stroke="#5B3A29" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- kopce a stromy -->
+  <path d="M0 255 Q150 185 300 245 T600 235 T800 222 V380 H0Z" fill="#A9D79B"/>
+  <path d="M0 290 Q200 250 400 285 T800 275 V380 H0Z" fill="#8BC57C"/>
+  <g><rect x="30" y="235" width="10" height="50" rx="3" fill="#8A5A3C"/><circle cx="35" cy="225" r="26" fill="#6DAF5C"/><circle cx="20" cy="240" r="17" fill="#5E9E4F"/><circle cx="52" cy="238" r="16" fill="#79BA66"/><circle cx="28" cy="220" r="4" fill="#E5533D"/><circle cx="46" cy="232" r="4" fill="#E5533D"/></g>
+  <g><rect x="755" y="230" width="10" height="55" rx="3" fill="#8A5A3C"/><circle cx="760" cy="218" r="28" fill="#6DAF5C"/><circle cx="742" cy="234" r="16" fill="#5E9E4F"/><circle cx="779" cy="232" r="17" fill="#79BA66"/></g>
+  <!-- chodník -->
+  <rect y="303" width="800" height="77" fill="url(#dlazba)"/><rect y="300" width="800" height="5" fill="#C9AE7E"/>
+  <!-- pec (přístavek) -->
+  <g><path d="M552 305 V240 Q586 200 620 240 V305Z" fill="url(#cihly)" stroke="#5B3A29" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M566 305 V268 Q586 244 606 268 V305Z" fill="${ma("pec") ? "url(#zar)" : "#3A2418"}" stroke="#5B3A29" stroke-width="3"/>
+    <g class="${c("pec")}"><path d="M576 300 Q570 285 580 272 Q582 284 588 280 Q586 268 594 260 Q596 276 602 282 Q606 292 598 300Z" fill="#FFB02E"/><path d="M582 300 Q580 290 586 284 Q590 292 594 290 Q596 296 592 300Z" fill="#FFE38A"/></g></g>
+  <!-- budova -->
+  <rect x="250" y="150" width="300" height="155" fill="#FBE7C6" stroke="#5B3A29" stroke-width="4"/>
+  <rect x="252" y="288" width="296" height="16" fill="url(#cihly)"/>
+  <rect x="482" y="62" width="34" height="68" fill="url(#cihly)" stroke="#5B3A29" stroke-width="4"/><rect x="476" y="56" width="46" height="10" rx="3" fill="#8E4A35" stroke="#5B3A29" stroke-width="3"/>
+  <g class="${c("pec")} kour" fill="#fff" opacity=".9"><circle cx="499" cy="42" r="10"/><circle cx="510" cy="24" r="13"/><circle cx="499" cy="4" r="9"/></g>
+  <path d="M222 156 L400 58 L578 156Z" fill="url(#tasky)" stroke="#5B3A29" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="400" cy="118" r="17" fill="#CFEAF7" stroke="#5B3A29" stroke-width="4"/><path d="M400 101V135M383 118H417" stroke="#5B3A29" stroke-width="3"/>
+  <!-- prapory -->
+  <g class="${c("slavnost")}"><path d="M236 156 Q400 196 564 156" fill="none" stroke="#5B3A29" stroke-width="2"/>
+    ${[["#E5533D", 268, 166], ["#F6C945", 300, 173], ["#5BA4D9", 332, 178], ["#7BC067", 364, 181], ["#E5533D", 396, 182], ["#F6C945", 428, 181], ["#5BA4D9", 460, 178], ["#7BC067", 492, 173], ["#E5533D", 524, 166]].map(([f, x, y]) => `<path d="M${x - 9} ${y - 1} L${x + 9} ${y} L${x} ${y + 17}Z" fill="${f}" stroke="#5B3A29" stroke-width="1.5"/>`).join("")}</g>
+  <!-- markýza -->
+  <g><rect x="268" y="188" width="156" height="20" fill="#FFF4E0" stroke="#5B3A29" stroke-width="3"/>
+    ${[0, 1, 2, 3, 4, 5, 6, 7].filter(i => i % 2 === 0).map(i => `<rect x="${269 + i * 19.4}" y="189" width="19.4" height="18" fill="#E5533D"/>`).join("")}
+    ${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<path d="M${268 + i * 19.5} 208 a9.75 9.75 0 0 0 19.5 0Z" fill="${i % 2 === 0 ? "#E5533D" : "#FFF4E0"}" stroke="#5B3A29" stroke-width="2"/>`).join("")}</g>
+  <!-- výloha -->
+  <rect x="278" y="222" width="136" height="60" rx="4" fill="#DDF1FB" stroke="#5B3A29" stroke-width="4"/>
+  <path d="M282 252 H410 M282 279 H410" stroke="#C8843A" stroke-width="4"/>
+  <path d="M290 230 l14 -6 M380 270 l16 -8" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+  <g class="${c("regal")}">${bochnik(302, 243)}${bochnik(346, 243)}${bochnik(390, 243)}</g>
+  <g class="${c("pecivo")}">${rohlik(300, 272)}${preclik(346, 268)}${rohlik(390, 272)}</g>
+  <!-- truhlík s květinami -->
+  <g class="${c("kvetiny")}"><rect x="276" y="284" width="140" height="14" rx="3" fill="#8A5A3C" stroke="#5B3A29" stroke-width="2"/>
+    ${kvet(290, 274, "#E5533D")}${kvet(312, 272, "#F28BB8")}${kvet(334, 275, "#F6C945")}${kvet(356, 272, "#E5533D")}${kvet(378, 274, "#B794E6")}${kvet(400, 272, "#F28BB8")}</g>
+  <!-- dveře -->
+  <path d="M440 305 V232 A30 30 0 0 1 500 232 V305Z" fill="#9A5B33" stroke="#5B3A29" stroke-width="4"/>
+  <path d="M452 300 V240 M488 300 V240" stroke="#7E4826" stroke-width="3"/>
+  <circle cx="470" cy="236" r="10" fill="#DDF1FB" stroke="#5B3A29" stroke-width="3"/><circle cx="491" cy="270" r="4" fill="#F6C945" stroke="#5B3A29" stroke-width="1.5"/>
+  <rect x="432" y="302" width="76" height="7" rx="2" fill="#C9AE7E" stroke="#5B3A29" stroke-width="2"/>
+  <!-- lampa -->
+  <g class="${c("kvetiny")}"><circle cx="525" cy="222" r="26" fill="url(#svetlo)"/><path d="M512 205 h14 v8" stroke="#5B3A29" stroke-width="3" fill="none"/><rect x="518" y="212" width="16" height="20" rx="4" fill="#FFE38A" stroke="#5B3A29" stroke-width="3"/><path d="M516 212 h20 l-4 -5 h-12Z" fill="#5B3A29"/></g>
+  <!-- vývěsní štít -->
+  <g class="${c("stit")}"><path d="M250 166 H196" stroke="#5B3A29" stroke-width="4"/><path d="M204 166 v12 M242 166 v12" stroke="#5B3A29" stroke-width="2"/>
+    <rect x="166" y="178" width="112" height="50" rx="10" fill="#5B3A29" stroke="#F6C945" stroke-width="3"/>
+    <text x="222" y="198" text-anchor="middle" font-family="Georgia, serif" font-size="13" font-weight="bold" fill="#F6C945">U Dělicího</text>
+    <text x="222" y="216" text-anchor="middle" font-family="Georgia, serif" font-size="13" font-weight="bold" fill="#F6C945">válečku</text></g>
+  <!-- kočka -->
+  <g transform="translate(232 296)"><ellipse rx="20" ry="11" fill="#F0A04B" stroke="#5B3A29" stroke-width="2"/><circle cx="-16" cy="-6" r="9" fill="#F0A04B" stroke="#5B3A29" stroke-width="2"/><path d="M-23 -11 l2 -8 l5 6 M-14 -13 l4 -7 l3 7" fill="#F0A04B" stroke="#5B3A29" stroke-width="2" stroke-linejoin="round"/><path d="M-20 -6 q2 2 4 0 M-14 -6 q2 2 4 0" stroke="#5B3A29" stroke-width="1.5" fill="none"/><path d="M18 2 q14 4 8 -10" stroke="#5B3A29" stroke-width="2" fill="none"/><text x="8" y="-16" font-size="11" fill="#5B3A29" font-family="Verdana">z</text><text x="16" y="-26" font-size="9" fill="#5B3A29" font-family="Verdana">z</text></g>
+  <!-- pekař Kvásek -->
+  <g transform="translate(120 222)">
+    <ellipse cx="0" cy="88" rx="34" ry="5" fill="#000" opacity=".12"/>
+    <rect x="-16" y="62" width="12" height="24" rx="5" fill="#5B3A29"/><rect x="4" y="62" width="12" height="24" rx="5" fill="#5B3A29"/>
+    <ellipse cx="-11" cy="86" rx="10" ry="5" fill="#3A2418"/><ellipse cx="11" cy="86" rx="10" ry="5" fill="#3A2418"/>
+    <path d="M-26 66 Q-30 20 0 16 Q30 20 26 66Z" fill="#fff" stroke="#5B3A29" stroke-width="3"/>
+    <path d="M-15 32 H15 V64 Q0 70 -15 64Z" fill="#F3D6A6" stroke="#5B3A29" stroke-width="2"/>
+    <circle cx="0" cy="26" r="2.5" fill="#5B3A29"/><circle cx="0" cy="40" r="2.5" fill="#5B3A29" opacity="0"/>
+    <!-- ruka v pásce -->
+    <path d="M18 26 Q30 36 14 46" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M18 26 Q30 36 14 46" stroke="#5B3A29" stroke-width="2" fill="none" opacity=".4"/>
+    <path d="M6 22 L28 52 L4 50Z" fill="#7FB3D5" stroke="#4C7FA3" stroke-width="2" stroke-linejoin="round"/>
+    <!-- mávající ruka -->
+    <path d="M-20 28 Q-36 14 -34 -2" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M-20 28 Q-36 14 -34 -2" stroke="#5B3A29" stroke-width="2" fill="none" opacity=".4"/>
+    <circle cx="-34" cy="-6" r="7" fill="#F5C9A0" stroke="#5B3A29" stroke-width="2"/>
+    <g class="${c("slavnost")}"><rect x="-60" y="-14" width="52" height="10" rx="5" fill="#F6C945" stroke="#B8860B" stroke-width="2" transform="rotate(-25 -34 -9)"/><path d="M-52 -34 l3 7 7 1 -5 5 1 7 -6 -4 -6 4 1 -7 -5 -5 7 -1z" fill="#FFE38A"/></g>
+    <!-- hlava -->
+    <circle cx="0" cy="0" r="20" fill="#F5C9A0" stroke="#5B3A29" stroke-width="3"/>
+    <circle cx="-7" cy="-3" r="2.5" fill="#3A2418"/><circle cx="7" cy="-3" r="2.5" fill="#3A2418"/>
+    <circle cx="-12" cy="5" r="4" fill="#F28B82" opacity=".6"/><circle cx="12" cy="5" r="4" fill="#F28B82" opacity=".6"/>
+    <path d="M-10 6 Q-4 2 0 6 Q4 2 10 6 Q6 10 0 8 Q-6 10 -10 6Z" fill="#7A4A2A"/>
+    <path d="M-5 11 Q0 15 5 11" stroke="#3A2418" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- čepice -->
+    <rect x="-17" y="-24" width="34" height="10" rx="2" fill="#fff" stroke="#5B3A29" stroke-width="2.5"/>
+    <path d="M-17 -22 C-30 -30 -22 -50 -8 -44 C-4 -56 12 -56 14 -44 C28 -50 32 -30 17 -22Z" fill="#fff" stroke="#5B3A29" stroke-width="2.5"/>
+  </g>
+  <!-- dodávka -->
+  <g class="${c("dodavka")}" transform="translate(636 228)">
+    <path d="M0 10 Q0 0 10 0 H96 Q104 0 106 8 L112 32 H140 Q148 34 148 44 V66 H0Z" fill="#F6C945" stroke="#5B3A29" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M108 10 L114 32 H140" fill="none" stroke="#5B3A29" stroke-width="3"/><path d="M100 8 h5 l6 22 h-11Z" fill="#CFEAF7" stroke="#5B3A29" stroke-width="2"/>
+    <rect x="0" y="42" width="148" height="8" fill="#C8843A"/>
+    <circle cx="52" cy="24" r="15" fill="#FFF4E0" stroke="#5B3A29" stroke-width="2"/>${bochnik(52, 24)}
+    <circle cx="30" cy="68" r="13" fill="#3A2418"/><circle cx="30" cy="68" r="5" fill="#ddd"/><circle cx="118" cy="68" r="13" fill="#3A2418"/><circle cx="118" cy="68" r="5" fill="#ddd"/>
+    <circle cx="146" cy="52" r="4" fill="#FFE38A" stroke="#5B3A29" stroke-width="1.5"/></g>
+  <!-- slavnost: konfety -->
+  <g class="${c("slavnost")}">${[[200, 120, "#E5533D"], [600, 140, "#5BA4D9"], [300, 100, "#7BC067"], [560, 100, "#F28BB8"], [660, 180, "#F6C945"], [150, 160, "#B794E6"]].map(([x, y, f]) => `<rect x="${x}" y="${y}" width="8" height="12" rx="2" fill="${f}" transform="rotate(${x % 50} ${x} ${y})"/>`).join("")}</g>
+</svg></div>`;
 }
 function miseOdemcena(i) { return i === 0 || (S.mise[HRA.mise[i - 1].id] && S.mise[HRA.mise[i - 1].id].hotovo); }
 const rohliky = n => "🥐".repeat(n) + `<span class="prazdny">${"🥐".repeat(3 - n)}</span>`;
