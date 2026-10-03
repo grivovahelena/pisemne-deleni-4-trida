@@ -300,9 +300,9 @@ const HRA = {
           vysvetleni: "Zbytek musí být menší než 7. Může být 0, 1, 2, 3, 4, 5 nebo 6, ale nikdy 7." }
       ]},
     { id: "m2", nazev: "Čisté objednávky", ikona: "🍞", popis: "Písemně, beze zbytků", odmena: "regal",
-      uvod: "První objednávky jsou jednoduché: všechno se rozdělí beze zbytku. Hra ti zvýrazní, co právě dělíš, a další číslici připíše za tebe.",
+      uvod: "První objednávky jsou jednoduché: všechno se rozdělí beze zbytku. Hra ti zvýrazní, co právě dělíš, a další číslici připíše za tebe. Na konci si výsledek ověříš zkouškou.",
       odmenaText: "Regály se naplnily voňavým chlebem!",
-      podpora: { zvyraznit: true, pripisuje: "hra", zkouska: "ukaz" },
+      podpora: { zvyraznit: true, pripisuje: "hra", zkouska: "zak" },
       ulohy: [
         { typ: "pisemne", a: 639, b: 3 }, { typ: "pisemne", a: 488, b: 4 }, { typ: "pisemne", a: 884, b: 4 },
         { typ: "pisemne", a: 366, b: 3 }, { typ: "pisemne", a: 848, b: 4 }, { typ: "pisemne", a: 936, b: 3 },
@@ -311,7 +311,7 @@ const HRA = {
     { id: "m3", nazev: "Zbytky po cestě", ikona: "🥐", popis: "Zbytky mezi kroky a odhad", odmena: "pecivo",
       uvod: "Teď už po cestě něco zbude. Pamatuj: zbylý plech rozbalím na pytlíky, tedy připíšu další číslici. Nejdřív vždy odhadni výsledek.",
       odmenaText: "Výloha je plná rohlíků a preclíků!",
-      podpora: { zvyraznit: true, pripisuje: "hra", odhad: true, zkouska: "ukaz" },
+      podpora: { zvyraznit: true, pripisuje: "hra", odhad: true, zkouska: "zak" },
       ulohy: [
         { typ: "pisemne", a: 75, b: 5 }, { typ: "pisemne", a: 84, b: 3 }, { typ: "pisemne", a: 756, b: 3 },
         { typ: "pisemne", a: 564, b: 4 }, { typ: "pisemne", a: 362, b: 2 }, { typ: "pisemne", a: 786, b: 6 },
@@ -320,14 +320,14 @@ const HRA = {
     { id: "m4", nazev: "Když první číslice nestačí", ikona: "🪧", popis: "Dvojciferný podíl", odmena: "stit",
       uvod: "Některé objednávky začínají malým číslem. Když se dělitel do první číslice nevejde, vezmi dvě číslice. Další číslici už připisuješ ty.",
       odmenaText: "Nad pekárnou visí nový vývěsní štít!",
-      podpora: { zvyraznit: true, pripisuje: "zak", cislice: true },
+      podpora: { zvyraznit: true, pripisuje: "zak", cislice: true, zkouska: "zak" },
       ulohy: [
         { typ: "pisemne", a: 135, b: 3 }, { typ: "pisemne", a: 192, b: 4 }, { typ: "pisemne", a: 252, b: 6 },
         { typ: "pisemne", a: 276, b: 6 }, { typ: "pisemne", a: 239, b: 5 }, { typ: "pisemne", a: 381, b: 4 },
         { typ: "pisemne", a: 193, b: 7 }, { typ: "pisemne", a: 520, b: 6 }, { typ: "pisemne", a: 332, b: 9 }
       ]},
-    { id: "m5", nazev: "Nula v podílu", ikona: "🌷", popis: "Nula v podílu, zbytek, zkouška", odmena: "kvetiny",
-      uvod: "Pozor na pasti! Když se dělitel nevejde, napiš do podílu 0. Na konci může zůstat zbytek. Každý výsledek ověříš zkouškou.",
+    { id: "m5", nazev: "Nula v podílu", ikona: "🌷", popis: "Nula v podílu a zbytek", odmena: "kvetiny",
+      uvod: "Pozor na pasti! Když se dělitel nevejde, napiš do podílu 0. Na konci může zůstat zbytek. Nezapomeň ho přičíst ve zkoušce.",
       odmenaText: "Před pekárnou rozkvetly květiny a rozsvítila se lampa!",
       podpora: { zvyraznit: true, pripisuje: "zak", zkouska: "zak" },
       ulohy: [
@@ -356,7 +356,7 @@ const HRA = {
     { id: "m7", nazev: "Mistrovská zkouška", ikona: "🏆", popis: "Všechno dohromady, bez nápovědy", odmena: "slavnost",
       uvod: "Kvásek tě zkouší naposledy. Tentokrát bez zvýrazňování. Věřím, že všechno zvládneš. Hodně štěstí, učni!",
       odmenaText: "Celá Mouková slaví! Kvásek ti podává zlatý váleček.",
-      podpora: { zvyraznit: false, pripisuje: "zak" },
+      podpora: { zvyraznit: false, pripisuje: "zak", zkouska: "zak" },
       ulohy: [
         { typ: "pisemne", a: 46, b: 4 }, { typ: "pisemne", a: 896, b: 4 }, { typ: "pisemne", a: 738, b: 6 },
         { typ: "pisemne", a: 315, b: 5 }, { typ: "pisemne", a: 427, b: 8 }, { typ: "pisemne", a: 814, b: 2 },
